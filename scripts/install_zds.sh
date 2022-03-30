@@ -338,6 +338,7 @@ if  ! $(_in "-tex-local" $@) && ( $(_in "+tex-local" $@) || $(_in "+full" $@) );
     cd $BASE_REPO
 
     if [ -d $REPO ]; then # remove previous version of the template
+        rm -rf $BASE_REPO
         rm -rf $REPO
     fi
 
