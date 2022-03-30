@@ -117,6 +117,8 @@ if  ! $(_in "-packages" $@) && ( $(_in "+packages" $@) || $(_in "+base" $@) || $
         fi
         echo ""
     done
+    echo "$filepath" > packages.makelock
+    cat "$filepath" > "$filepath.makelock"
 fi
 
 
