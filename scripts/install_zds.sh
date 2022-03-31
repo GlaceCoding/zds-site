@@ -117,6 +117,8 @@ if  ! $(_in "-packages" $@) && ( $(_in "+packages" $@) || $(_in "+base" $@) || $
         fi
         echo ""
     done
+    echo "$filepath" > packages.makelock
+    cat "$filepath" > "$filepath.makelock"
 fi
 
 
@@ -338,6 +340,7 @@ if  ! $(_in "-tex-local" $@) && ( $(_in "+tex-local" $@) || $(_in "+full" $@) );
     cd $BASE_REPO
 
     if [ -d $REPO ]; then # remove previous version of the template
+        rm -rf $BASE_REPO
         rm -rf $REPO
     fi
 

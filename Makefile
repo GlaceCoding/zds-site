@@ -1,3 +1,78 @@
+# { TODO: Use define_variable.sh
+ZDS_ENV=zdsenv/
+# }
+
+JDK_PATH=jdk/
+ES_PATH=elasticsearch/
+TEX_PATH=.local/texlive/
+
+full: il-packages il-virtualenv il-node il-jdk-local il-elastic-local il-tex-local il-latex-template il-back il-zmd-install il-front il-data
+
+base: il-packages il-virtualenv il-node il-back zmd-install il-front il-data
+
+# -- packages
+PACKAGES_PATH=$(shell cat packages.makelock 2>/dev/null)
+ifeq ($(PACKAGES_PATH),)
+PACKAGES_PATH=packages
+endif
+
+il-packages: $(PACKAGES_PATH).makelock
+$(PACKAGES_PATH).makelock: $(PACKAGES_PATH)
+	./scripts/install_zds.sh +packages --force-skip-activating
+
+# -- virtualenv
+il-virtualenv: $(ZDS_ENV)
+$(ZDS_ENV):
+	./scripts/install_zds.sh +virtualenv --force-skip-activating
+
+# -- node
+il-node: .nvmrc.makelock
+.nvmrc.makelock: .nvmrc
+	./scripts/install_zds.sh +node --force-skip-activating
+	@cat .nvmrc > .nvmrc.makelock
+
+# -- back
+il-back: requirements-dev.txt.makelock
+requirements-dev.txt.makelock: requirements-dev.txt requirements.txt
+	./scripts/install_zds.sh +back
+	@cat requirements-dev.txt requirements.txt > requirements-dev.txt.makelock
+
+# -- front
+il-front: yarn.lock.makelock
+node_modules/:
+yarn.lock.makelock: yarn.lock node_modules/
+	./scripts/install_zds.sh +front
+	@cat yarn.lock > yarn.lock.makelock
+
+# ++ RELINK x4
+il-jdk-local:
+	./scripts/install_zds.sh +jdk-local
+
+il-elastic-local:
+	./scripts/install_zds.sh +elastic-local
+
+il-tex-local:
+	./script/install_zds.sh +tex-local
+
+il-latex-template:
+	./script/install_zds.sh +latex-template
+
+il-data:
+	./script/install_zds.sh +data
+
+reset:
+	rm *.makelock
+
+fclean: clean reset
+	rm -rf $(ZDS_ENV)
+	rm -rf $(JDK_PATH)
+	rm -rf $(ES_PATH)
+	rm -rf $(TEX_PATH)
+	rm -rf node_modules
+
+.PHONY = il-full il-base il-packages il-virtualenv il-node il-jdk-local il-elastic-local il-tex-local il-latex-template il-fclean il-clean
+
+
 ## ~ General
 
 install-linux: ## Install the minimal components needed

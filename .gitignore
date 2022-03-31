@@ -25,6 +25,7 @@ api_analytics_secrets.json
 
 /apache-solr
 
+*.makelock
 /.tmp
 
 /scripts/release_summary.md
